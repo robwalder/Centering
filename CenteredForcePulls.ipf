@@ -4,14 +4,14 @@
 // For version 9.1
 // Changed file name to Centered Force Pulls.  Going to keep this for the rest of the upgrades.  
 
-#include "ForceRamp",version>=2
-#include "ConstantForceMotion"
-#include "SearchForMolecules", version>=2
-#include "CFPReport"
-#include "ForceClamp_rw", version>=3
-#include "ZeroThePD"
-#include "InvolsCheck"
-#include "WaveDimNote"
+#include "::Force-Ramp:ForceRamp",version>=2
+#include "::Cypher-Utilities:ConstantForceMotion"
+#include "::Cypher-Utilities:SearchForMolecules", version>=2
+#include ":CFPReport"
+#include "::Force-Clamp:ForceClamp_rw", version>=3
+#include "::Cypher-Utilities:ZeroThePD"
+#include "::Cypher-Utilities:InvolsCheck"
+#include "::General-Igor-Utilities:WaveDimNote"
 
 
 Menu "Centered Force Pulls"
