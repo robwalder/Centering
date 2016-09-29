@@ -1,5 +1,5 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
-#include "ARForceData"
+#include "::AR-Data:ARForceData"
 
 Window CFPReport() : Panel
 	PauseUpdate; Silent 1		// building window...
