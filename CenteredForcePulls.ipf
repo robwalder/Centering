@@ -1,8 +1,9 @@
 #pragma rtGlobals=1		// Use modern global access method.
-#pragma version=9.1
+#pragma version=9.2
 
-// For version 9.1
-// Changed file name to Centered Force Pulls.  Going to keep this for the rest of the upgrades.  
+// For version 9.2
+// Adding determination of the zsensor value for "railing", i.e. when the feedback loop pushes the stage lower than 0V for Zpiezo.
+// Should prevent false detection of railing the z stage when using this program on different cyphers, or after recalibration of the z stage.
 
 #include "::Force-Ramp:ForceRamp",version>=2
 #include "::Cypher-Utilities:ConstantForceMotion"
@@ -100,8 +101,25 @@ Function InitializeCFP([ShowUserInterface])
 	InitCheckInvols()
 	DisplayCFPPanel("FirstRampCFP")
 	DisplayCFPPanel("CenteredRampCFP")
+	DetermineZSensorRail()
 	
 End // InitializeCTFC
+
+// Found that using Z voltage output to the piezo doesn't work for determining when the z stage has railed. 
+// Instead, we will determine the zsensor reading when Z piezo is set to 0 V and then use that zsensor value
+// to determine if the Z stage has railed.
+
+Function DetermineZSensorRail()
+	Variable Error=0
+	Variable CurrentZPzt=td_rv("Output.Z")
+	Error = td_SetRamp(1, "Output.Z", CurrentZPzt, 0, "", 0, 0, "", 0, 0, "DetermineZSensorRailCallback()")
+End
+
+Function DetermineZSensorRailCallback()
+	Wave CFPSettings = root:CFP:CFPSettings
+	CFPSettings[%ZSensorRailed]=td_rv("Cypher.LVDT.Z")
+End
+
 
 //  This function controls the sequence of events for the centering protocol
 //  It also checks to make sure the molecule didn't detach.  If it detached, then start a new iteration.  
@@ -126,7 +144,7 @@ Function CFP_MainLoop()
 	Variable ZCurrentPosition_Volts= td_rv("Cypher.LVDT.Z")
 	
 	// Check to see if zsensor has railed.  Probably means the molecule has disconnected.	
-	If ((ZCurrentPosition_Volts < -1.06922)&&!(StringMatch(Centering[%State],"FirstRamp")))
+	If ((ZCurrentPosition_Volts <CFPSettings[%ZSensorRailed])&&!(StringMatch(Centering[%State],"FirstRamp")))
 		Centering[%State] = "Railed"
 	EndIf
 	
@@ -215,7 +233,7 @@ Function CFP_MainLoop()
 		break
 		case "Railed":
 			StopZFeedbackLoop()		
-			SaveCurrentData()  // This is just in here temporarily for testing purposes.  Trying to see if there is a bug to fix.	
+			//SaveCurrentData()  // This is just in here temporarily for testing purposes.  Trying to see if there is a bug to fix.	
 			FinishCFP()
 		break
 		case "EndProgram":
