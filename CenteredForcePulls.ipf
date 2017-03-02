@@ -118,6 +118,12 @@ End
 Function DetermineZSensorRailCallback()
 	Wave CFPSettings = root:CFP:CFPSettings
 	CFPSettings[%ZSensorRailed]=td_rv("Cypher.LVDT.Z")
+	Wave CFPQuickSettings=root:CFP:CFPQuickSettings
+	Variable QSCounter=0
+	Variable NumQS=DimSize(CFPQuickSettings,0)
+	For(QSCounter=0;QSCounter<NumQS;QSCounter+=1)
+		CFPQuickSettings[%ZSensorRailed][QSCounter]=td_rv("Cypher.LVDT.Z")
+	EndFor
 End
 
 
