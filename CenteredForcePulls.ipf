@@ -118,6 +118,9 @@ End
 Function DetermineZSensorRailCallback()
 	Wave CFPSettings = root:CFP:CFPSettings
 	CFPSettings[%ZSensorRailed]=td_rv("Cypher.LVDT.Z")
+	If(FindDimLabel(CFPSettings,0,"ZSensorRailed")==-2)
+		Print "Error: ZSensorRailed wave setting does not exist. Centering program will not work properly"
+	EndIf
 End
 
 
