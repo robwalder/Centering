@@ -899,22 +899,31 @@ Function FinishCFP()
 	CenteringSettings[%State] = "FinishCFP"
 
 	Variable EndProgram=StringMatch(CenteringSettings[%$"EndProgram"],"1")
+	Variable FoundX=td_rv("Cypher.LVDT.X")
+	Variable FoundY=td_rv("Cypher.LVDT.Y")
+	If(CFPSettings[%FoundMolecule])
+		Wave Circles_X = root:CFP:Circles_X	
+		Wave Circles_Y = root:CFP:Circles_Y
+		FoundX=	Circles_X[0]
+		FoundY=Circles_Y[0]
+	EndIf
+	
 	If(!EndProgram)
 		If(CFPSettings[%UseSearchGrid]&&!CFPSettings[%UseZeroThePD]&&CFPSettings[%UseCheckInvols])
 			CheckInvolsCallbackWave[%Callback]="StartCFP()"
-			SearchForMolecule(FoundMolecule=CFPSettings[%FoundMolecule],Callback="DoCheckInvols()")
+			SearchForMolecule(FoundMolecule=CFPSettings[%FoundMolecule],Callback="DoCheckInvols()",FoundX_V=FoundX,FoundY_V=FoundY)
 		EndIf
 		If(CFPSettings[%UseSearchGrid]&&!CFPSettings[%UseZeroThePD]&&!CFPSettings[%UseCheckInvols])
-			SearchForMolecule(FoundMolecule=CFPSettings[%FoundMolecule],Callback="StartCFP()")
+			SearchForMolecule(FoundMolecule=CFPSettings[%FoundMolecule],Callback="StartCFP()",FoundX_V=FoundX,FoundY_V=FoundY)
 		EndIf
 		If(CFPSettings[%UseSearchGrid]&&CFPSettings[%UseZeroThePD]&&CFPSettings[%UseCheckInvols])
 			ZeroThePDCallbackWave[%Callback]="DoCheckInvols()"
 			CheckInvolsCallbackWave[%Callback]="StartCFP()"
-			SearchForMolecule(FoundMolecule=CFPSettings[%FoundMolecule],Callback="DoZeroPD()")
+			SearchForMolecule(FoundMolecule=CFPSettings[%FoundMolecule],Callback="DoZeroPD()",FoundX_V=FoundX,FoundY_V=FoundY)
 		EndIf
 		If(CFPSettings[%UseSearchGrid]&&CFPSettings[%UseZeroThePD]&&!CFPSettings[%UseCheckInvols])
 			ZeroThePDCallbackWave[%Callback]="StartCFP()"
-			SearchForMolecule(FoundMolecule=CFPSettings[%FoundMolecule],Callback="DoZeroPD()")
+			SearchForMolecule(FoundMolecule=CFPSettings[%FoundMolecule],Callback="DoZeroPD()",FoundX_V=FoundX,FoundY_V=FoundY)
 		EndIf
 		If(!CFPSettings[%UseSearchGrid]&&CFPSettings[%UseZeroThePD]&&CFPSettings[%UseCheckInvols])
 			ZeroThePDCallbackWave[%Callback]="DoCheckInvols()"
