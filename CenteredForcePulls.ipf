@@ -166,6 +166,8 @@ Function CFP_MainLoop()
 			Wave FirstRamp_Settings=root:CFP:FirstRamp_Settings
 			Wave/T FirstRamp_WaveNames=root:CFP:FirstRamp_WaveNames
 			FirstRamp_Settings[%DefVOffset]=CFPSettings[%DeflectionOffset]
+			CFPSettings[%StartX]=XCurrentPosition_Volts
+			CFPSettings[%StartY]=YCurrentPosition_Volts
 			DoForceRampFiltered(FirstRamp_Settings,FirstRamp_WaveNames,CFPSettings[%TriggerFilterFreq])
 			
 		break
@@ -899,14 +901,8 @@ Function FinishCFP()
 	CenteringSettings[%State] = "FinishCFP"
 
 	Variable EndProgram=StringMatch(CenteringSettings[%$"EndProgram"],"1")
-	Variable FoundX=td_rv("Cypher.LVDT.X")
-	Variable FoundY=td_rv("Cypher.LVDT.Y")
-	If(CFPSettings[%FoundMolecule])
-		Wave Circles_X = root:CFP:Circles_X	
-		Wave Circles_Y = root:CFP:Circles_Y
-		FoundX=	Circles_X[0]
-		FoundY=Circles_Y[0]
-	EndIf
+	Variable FoundX=CFPSettings[%StartX]
+	Variable FoundY=CFPSettings[%StartY]
 	
 	If(!EndProgram)
 		If(CFPSettings[%UseSearchGrid]&&!CFPSettings[%UseZeroThePD]&&CFPSettings[%UseCheckInvols])
